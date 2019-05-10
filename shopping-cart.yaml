@@ -29,14 +29,17 @@ spec:
     metadata:
       labels:
         app: "shopping-cart"
+      annotations:
+        traffic.sidecar.istio.io/excludeInboundPorts: "2552,8558"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "2552,8558"
     spec:
       containers:
       - name: "shopping-cart"
-        image: "lightbend-docker-registry.bintray.io/octo/akka-grpc-ddata-shopping-cart:1.1"
+        image: "gcr.io/stateserv/akka-grpc-ddata-shopping-cart:latest"
 
         ports:
-        - containerPort: 8558
-          name: "management"
+        - containerPort: 8080
+          name: "http"
 
         env:
         - name: "APP_LABEL"
@@ -58,14 +61,14 @@ spec:
         readinessProbe:
           httpGet:
             path: "/ready"
-            port: "management"
+            port: 8558
           periodSeconds: 10
           failureThreshold: 10
           initialDelaySeconds: 20
         livenessProbe:
           httpGet:
             path: "/alive"
-            port: "management"
+            port: 8558
           periodSeconds: 10
           failureThreshold: 10
           initialDelaySeconds: 20
